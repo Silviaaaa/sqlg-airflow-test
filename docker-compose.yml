@@ -28,6 +28,11 @@ services:
           - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
           - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=False
           #- AIRFLOW__WEBSERVER__RBAC=False          
+          - BOOTSTRAP_SERVER=broker:9092
+          - SECURITY_PROTOCOL=PLAINTEXT
+          - KAFKA_TOPIC_NAME=kafka_example
+          - KAFKA_API_KEY=None
+          - KAFKA_API_SECRET=None
         logging:
             options:
                 max-size: 10m
@@ -40,7 +45,7 @@ services:
           - ./etl_base:/usr/local/airflow/etl_base
           - ./etl_base/dags:/usr/local/airflow/dags
           - ./etl_base/sql:/usr/local/airflow/sql
-          - /home/FTP:/usr/local/airflow/etl_base/SOURCE
+          # - /home/FTP:/usr/local/airflow/etl_base/SOURCE
           - ./bin:/usr/local/airflow/bin
           - ./logs:/usr/local/airflow/logs
           - ./etl_base/requirements.txt:/requirements.txt
@@ -52,3 +57,27 @@ services:
             interval: 30s
             timeout: 30s
             retries: 3
+
+    zookeeper:
+        image: confluentinc/cp-zookeeper:7.3.2
+        container_name: zookeeper
+        environment:
+          ZOOKEEPER_CLIENT_PORT: 2181
+          ZOOKEEPER_TICK_TIME: 2000
+
+    broker:
+        image: confluentinc/cp-kafka:7.3.2
+        container_name: broker
+        ports:
+        # To learn about configuring Kafka for access across networks see
+        # https://www.confluent.io/blog/kafka-client-cannot-connect-to-broker-on-aws-on-docker-etc/
+          - "9092:9092"
+        depends_on:
+          - zookeeper
+        environment:
+          KAFKA_BROKER_ID: 1
+          KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:9092
+          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+          KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+          KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
