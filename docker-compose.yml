@@ -28,6 +28,11 @@ services:
           - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
           - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=False
           #- AIRFLOW__WEBSERVER__RBAC=False          
+          - BOOTSTRAP_SERVER=host.docker.internal:19092
+          - SECURITY_PROTOCOL=PLAINTEXT
+          - KAFKA_TOPIC_NAME=kafka_example1
+          - KAFKA_API_KEY=None
+          - KAFKA_API_SECRET=None
         logging:
             options:
                 max-size: 10m
@@ -78,8 +83,3 @@ services:
           KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
           KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
           KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-          BOOTSTRAP_SERVER: host.docker.internal:19092
-          SECURITY_PROTOCOL: PLAINTEXT
-          KAFKA_TOPIC_NAME: kafka_example1
-          KAFKA_API_KEY: None
-          KAFKA_API_SECRET: None
