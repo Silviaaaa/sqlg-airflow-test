@@ -45,12 +45,6 @@ with DAG(
         except:
             consumer_logger.info(f"Unable to consume message!")
             return
-    
-    # define the await function
-    def await_function(message):
-        if isinstance(json.loads(message.value()), int):
-            if json.loads(message.value()) % 5 == 0:
-                return f" Got the following message: {json.loads(message.value())}"
 
     # define the producer task
     producer_task = ProduceToTopicOperator(
@@ -76,22 +70,6 @@ with DAG(
         max_batch_size=10,
         poll_timeout=10,
     )
-
-    # define the await task
-    await_message = AwaitKafkaMessageOperator(
-        task_id=f"awaiting_message_in_{my_topic}",
-        topics=[my_topic],
-        # the apply function needs to be passed with its location for the triggerer
-        apply_function="kafka_example_dag_1.await_function", 
-        kafka_config={
-            **connection_config,
-            "group.id": "awaiting_message",
-            "enable.auto.commit": False,
-            "auto.offset.reset": "beginning",
-        },
-        xcom_push_key="retrieved_message",
-    )
     
     # define DAG
     producer_task >> consumer_task
-    consumer_task >> await_message
