@@ -90,6 +90,7 @@ RUN set -ex \
     && pip install redis \
 #    && pip install MarkupSafe \	
     && pip install 'apache-airflow-providers-microsoft-mssql' \
+    && pip install airflow-provider-kafka \
 #    && pip install 'apache-airflow-providers-oracle' \	
 #    && pip install 'cryptography>=3.2' \
     && if [ -n "${PYTHON_DEPS}" ]; then pip install ${PYTHON_DEPS}; fi \
