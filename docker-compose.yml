@@ -28,9 +28,9 @@ services:
           - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
           - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=False
           #- AIRFLOW__WEBSERVER__RBAC=False          
-          - BOOTSTRAP_SERVER=host.docker.internal:19092
+          - BOOTSTRAP_SERVER=broker:9092
           - SECURITY_PROTOCOL=PLAINTEXT
-          - KAFKA_TOPIC_NAME=kafka_example1
+          - KAFKA_TOPIC_NAME=kafka_example
           - KAFKA_API_KEY=None
           - KAFKA_API_SECRET=None
         logging:
@@ -77,9 +77,7 @@ services:
         environment:
           KAFKA_BROKER_ID: 1
           KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-          LISTENERS: PLAINTEXT://:9092,DOCKER_HACK://:19092
-          KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,DOCKER_HACK:PLAINTEXT
-          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,DOCKER_HACK://host.docker.internal:19092
+          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:9092
           KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
           KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
           KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
